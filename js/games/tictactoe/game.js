@@ -480,6 +480,56 @@
                         y : 1
                     };
                 }
+            } else {
+                if (this.gameState[0][0] === this.playerChar) {
+                    if (this.gameState[2][1] === this.playerChar) {
+                        return {
+                            x : 0,
+                            y : 2
+                        };
+                    } else if (this.gameState[1][2] === this.playerChar) {
+                        return {
+                            x : 2,
+                            y : 0
+                        };
+                    }
+                } else if (this.gameState[0][2] === this.playerChar) {
+                    if (this.gameState[1][0] === this.playerChar) {
+                        return {
+                            x : 0,
+                            y : 0
+                        };
+                    } else if (this.gameState[2][1] === this.playerChar) {
+                        return {
+                            x : 2,
+                            y : 2
+                        };
+                    }
+                } else if (this.gameState[2][2] === this.playerChar) {
+                    if (this.gameState[0][1] === this.playerChar) {
+                        return {
+                            x : 2,
+                            y : 0
+                        };
+                    } else if (this.gameState[1][0] === this.playerChar) {
+                        return {
+                            x : 0,
+                            y : 2
+                        };
+                    }
+                } else if (this.gameState[2][0] === this.playerChar) {
+                    if (this.gameState[1][2] === this.playerChar) {
+                        return {
+                            x : 2,
+                            y : 2
+                        };
+                    } else if (this.gameState[0][1] === this.playerChar) {
+                        return {
+                            x : 0,
+                            y : 0
+                        };
+                    }
+                }
             }
             break;
         case 6:
