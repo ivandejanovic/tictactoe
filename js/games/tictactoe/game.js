@@ -631,13 +631,13 @@
 
         move = this.aiWin();
         if (move !== null) {
-            this.aiCalc = false;
+            this.aiNeedCalc = false;
             return move;
         }
 
         move = this.aiBlockWin();
         if (move !== null) {
-            this.aiCalc = false;
+            this.aiNeedCalc = false;
             return move;
         }
 
