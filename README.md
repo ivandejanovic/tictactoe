@@ -5,4 +5,4 @@ This is a HTML5 implementation of and old paper and pen game. Tic Tac Toe is pla
 
 This game was developed as my first try at HTML5 game development and canvas graphics. This game is also my first try of deploying packaged web apps to Firefox marketplace.
 
-You can play the game online on: http://www.quineinteractive.com/tictactoe.htm.
+You can play the game online or install it onto your device on: http://www.quineinteractive.com/tictactoe.htm.
