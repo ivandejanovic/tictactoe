@@ -5,49 +5,40 @@
   // Set app object to global scope.
   window.app = app;
 
-  // Template helper function
-  app.template = function(name) {
-    return Handlebars.compile($('#' + name + '-template').html());
-  };
-
   // Create model that will keep information if player plays first or second
   app.TurnModel = Backbone.Model.extend({
     defaults : {
       first : true
+    },
+    isFirst : function() {
+      return this.get('first');
     }
   });
 
   // Create basic view
-  app.BasicView = Backbone.View.extend({
-    el : '#main_container',
-    render : function() {
-      this.$el.html(this.template());
-    },
+  app.BasicView = QuineBackboneUtility.BackQBUView.extend({
+    el : '#main_container'
   });
 
   // Create index view
   app.IndexView = app.BasicView.extend({
-    template : app.template('index')
+    template : QuineBackboneUtility.template('index')
   });
 
   // Create play view
   app.PlayView = app.BasicView.extend({
-    template : app.template('play'),
+    template : QuineBackboneUtility.template('play'),
     initialize : function(options) {
-      this.turnModel = options.turnModel;
+      this.model = options.turnModel;
     },
     events : {
       'click #backPlay' : 'handleBackClick',
       'click #board' : 'handleBoardClick'
     },
-    render : function() {
-      this.$el.html(this.template());
-      this.initGame();
-    },
-    initGame : function() {
+    postRender : function() {
       var canvas = document.getElementById('board');
       var message = document.getElementById('message');
-      var first = this.turnModel.get('first');
+      var first = this.model.get('first');
       var playerChar = first ? 'X' : 'O';
       var aiChar = !first ? 'X' : 'O';
       var aiState = first ? 1 : 0;
@@ -61,40 +52,28 @@
     },
     handleBoardClick : function(evt) {
       app.gameObj.handleClick(evt);
-    },
-    handleBackClick : function(evt) {
-      window.history.back();
     }
   });
 
   // Create options view
   app.OptionsView = app.BasicView.extend({
-    template : app.template('options'),
+    template : QuineBackboneUtility.template('options'),
     events : {
       'click #backOptions' : 'handleBackClick',
       'click #first' : 'handleFirstClick',
       'click #second' : 'handleSecondClick'
     },
     initialize : function(options) {
-      this.turnModel = options.turnModel;
-      this.turnModel.on('all', this.render, this);
-    },
-    render : function() {
-      this.$el.html(this.template(this));
-    },
-    isFirst : function() {
-      return this.turnModel.get('first');
-    },
-    handleBackClick : function(evt) {
-      window.history.back();
+      this.model = options.turnModel;
+      this.model.on('all', this.render, this);
     },
     handleFirstClick : function(evt) {
-      this.turnModel.set({
+      this.model.set({
         first : true
       });
     },
     handleSecondClick : function(evt) {
-      this.turnModel.set({
+      this.model.set({
         first : false
       });
     }
@@ -102,23 +81,17 @@
 
   // Create instructions view
   app.InstructionsView = app.BasicView.extend({
-    template : app.template('instructions'),
+    template : QuineBackboneUtility.template('instructions'),
     events : {
       'click #backInstructions' : 'handleBackClick'
-    },
-    handleBackClick : function(evt) {
-      window.history.back();
     }
   });
 
   // Create about view
   app.AboutView = app.BasicView.extend({
-    template : app.template('about'),
+    template : QuineBackboneUtility.template('about'),
     events : {
       'click #backAbout' : 'handleBackClick'
-    },
-    handleBackClick : function(evt) {
-      window.history.back();
     }
   });
 
@@ -133,30 +106,30 @@
     },
     initialize : function(options) {
       var turnModel = new app.TurnModel;
-      this.index = new app.IndexView();
-      this.play = new app.PlayView({
+      this.indexView = new app.IndexView();
+      this.playView = new app.PlayView({
         turnModel : turnModel
       });
-      this.options = new app.OptionsView({
+      this.optionsView = new app.OptionsView({
         turnModel : turnModel
       });
-      this.instructions = new app.InstructionsView();
-      this.about = new app.AboutView();
+      this.instructionsView = new app.InstructionsView();
+      this.aboutView = new app.AboutView();
     },
     index : function() {
-      this.index.render();
+      this.indexView.render();
     },
     play : function() {
-      this.play.render();
+      this.playView.render();
     },
     options : function() {
-      this.options.render();
+      this.optionsView.render();
     },
     instructions : function() {
-      this.instructions.render();
+      this.instructionsView.render();
     },
     about : function() {
-      this.about.render();
+      this.aboutView.render();
     }
   });
 
