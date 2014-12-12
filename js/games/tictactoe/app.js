@@ -67,6 +67,10 @@
       this.model = options.turnModel;
       this.model.on('all', this.render, this);
     },
+    serializeData :function() {
+      var first = this.model.isFirst();
+      return {isFirst : first};
+    },
     handleFirstClick : function(evt) {
       this.model.set({
         first : true
