@@ -16,18 +16,18 @@
   });
 
   // Create basic view
-  app.BasicView = QuineBackboneUtility.BackQBUView.extend({
+  app.BasicView = Atlas.BackView.extend({
     el : '#main_container'
   });
 
   // Create index view
   app.IndexView = app.BasicView.extend({
-    template : QuineBackboneUtility.template('index')
+    template : Atlas.template('index')
   });
 
   // Create play view
   app.PlayView = app.BasicView.extend({
-    template : QuineBackboneUtility.template('play'),
+    template : Atlas.template('play'),
     initialize : function(options) {
       this.model = options.turnModel;
     },
@@ -35,7 +35,7 @@
       'click #backPlay' : 'handleBackClick',
       'click #board' : 'handleBoardClick'
     },
-    postRender : function() {
+    onRender : function() {
       var canvas = document.getElementById('board');
       var message = document.getElementById('message');
       var first = this.model.get('first');
@@ -57,7 +57,7 @@
 
   // Create options view
   app.OptionsView = app.BasicView.extend({
-    template : QuineBackboneUtility.template('options'),
+    template : Atlas.template('options'),
     events : {
       'click #backOptions' : 'handleBackClick',
       'click #first' : 'handleFirstClick',
@@ -85,7 +85,7 @@
 
   // Create instructions view
   app.InstructionsView = app.BasicView.extend({
-    template : QuineBackboneUtility.template('instructions'),
+    template : Atlas.template('instructions'),
     events : {
       'click #backInstructions' : 'handleBackClick'
     }
@@ -93,7 +93,7 @@
 
   // Create about view
   app.AboutView = app.BasicView.extend({
-    template : QuineBackboneUtility.template('about'),
+    template : Atlas.template('about'),
     events : {
       'click #backAbout' : 'handleBackClick'
     }
