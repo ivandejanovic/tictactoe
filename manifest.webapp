@@ -2,7 +2,7 @@
   "name": "Tic Tac Toe",
   "description": "This is a HTML5 implementation of and old paper and pen game. Tic Tac Toe is played on 3x3 grid. Two players play in turn by writing X or O on any available square. Player that manages to connect three symbols horizontally, vertically or diagonally wins.",
   "launch_path": "/views/tictactoe.htm",
-  "version": "2.4.6",
+  "version": "2.4.7",
   "icons": {
     "16": "/images/games/tictactoe16.png",
     "30": "/images/games/tictactoe30.png",
