@@ -13,7 +13,7 @@
     <div id="main_container">
       Loading...
     </div>
-    <script id="index-template" type="text/x-handlebars-template">
+    <script id="index-template" type="text/x-template">
       <h2>
         <p>
           Tic Tac Toe
@@ -36,7 +36,7 @@
         </ul>
       </nav>
     </script>
-    <script id="play-template" type="text/x-handlebars-template">
+    <script id="play-template" type="text/x-template">
       <h2>
         <img id="backPlay" src="../images/quine/common-back.png"/>
         <p>
@@ -46,25 +46,25 @@
       <canvas id="board"></canvas>
       <p id="message">Click on the grid to play</p>
     </script>
-    <script id="options-template" type="text/x-handlebars-template">
+    <script id="options-template" type="text/x-template">
       <h2>
-        <img id="backOptions" src="../images/quine/common-back.png"/>
+        <img id="backOptions" src="http://quineinteractive.com/images/quine/common-back.png"/>
         <p>
           Options
         </p>
       </h2>
       <nav>
         <ul>
-          <li {{#if isFirst}} class="selected" {{/if}}>
+          <li <% if (isFirst) { %> class="selected" <% } %> >
             <a id="first">Play first</a>
           </li>
-          <li {{#unless isFirst}} class="selected" {{/unless}}>
+          <li <% if (!isFirst) { %> class="selected" <% } %> >
             <a id="second">Play second</a>
           </li>
         </ul>
       </nav>
     </script>
-    <script id="instructions-template" type="text/x-handlebars-template">
+    <script id="instructions-template" type="text/x-template">
       <h2>
         <img id="backInstructions" src="../images/quine/common-back.png"/>
         <p>
@@ -79,7 +79,7 @@
         </p> 
       </article>
     </script>
-    <script id="about-template" type="text/x-handlebars-template">
+    <script id="about-template" type="text/x-template">
       <h2>
         <img id="backAbout" src="../images/quine/common-back.png"/>
         <p>
@@ -140,12 +140,11 @@
         </p>
       </article>
     </script>
-    <script type="text/javascript" src="../js/libs/json2.js"></script>
-    <script type="text/javascript" src="../js/libs/jquery-2.1.1.min.js"></script>
-    <script type="text/javascript" src="../js/libs/underscore-min-1.7.0.js"></script>
-    <script type="text/javascript" src="../js/libs/backbone-min-1.1.2.js"></script>
-    <script type="text/javascript" src="../js/libs/handlebars-v2.0.0.js"></script>
-    <script type="text/javascript" src="../js/libs/atlas.0.2.3.js"></script>
+    <script type="text/javascript" src="../js/libs/json2-min.js"></script>
+    <script type="text/javascript" src="../js/libs/jquery-2.1.4.min.js"></script>
+    <script type="text/javascript" src="../js/libs/underscore-1.8.3.min.js"></script>
+    <script type="text/javascript" src="../js/libs/backbone-1.2.1.min.js"></script>
+    <script type="text/javascript" src="../js/libs/atlas-0.3.0.min.js"></script>
     <script type="text/javascript" src="../js/games/tictactoe/game.js"></script>
     <script type="text/javascript" src="../js/games/tictactoe/app.js"></script>
   </body>

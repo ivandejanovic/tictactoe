@@ -22,12 +22,12 @@
 
   // Create index view
   app.IndexView = app.BasicView.extend({
-    template : Atlas.template('index')
+    template : Atlas.templateFactory('index')
   });
 
   // Create play view
   app.PlayView = app.BasicView.extend({
-    template : Atlas.template('play'),
+    template : Atlas.templateFactory('play'),
     initialize : function(options) {
       this.model = options.turnModel;
     },
@@ -57,7 +57,7 @@
 
   // Create options view
   app.OptionsView = app.BasicView.extend({
-    template : Atlas.template('options'),
+    template : Atlas.templateFactory('options'),
     events : {
       'click #backOptions' : 'handleBackClick',
       'click #first' : 'handleFirstClick',
@@ -85,7 +85,7 @@
 
   // Create instructions view
   app.InstructionsView = app.BasicView.extend({
-    template : Atlas.template('instructions'),
+    template : Atlas.templateFactory('instructions'),
     events : {
       'click #backInstructions' : 'handleBackClick'
     }
@@ -93,7 +93,7 @@
 
   // Create about view
   app.AboutView = app.BasicView.extend({
-    template : Atlas.template('about'),
+    template : Atlas.templateFactory('about'),
     events : {
       'click #backAbout' : 'handleBackClick'
     }
