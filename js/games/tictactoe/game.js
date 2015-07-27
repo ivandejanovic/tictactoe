@@ -1,16 +1,21 @@
 (function() {
+  'use strict';
+
   // Create app object to serve as namespace.
   var app = window.app || {};
 
   // Create gameObj object that will contain all game related logic and will
-  // be responsible for AI play and canvas drawing.
+  // be responsible for handling input and canvas drawing.
   var gameObj = {};
+
+  // Create gameWrapper object that will provide public interface toward gameObj.
+  var gameWrapper = {};
 
   // Set app object to global scope.
   window.app = app;
 
-  // Set gameObj to global app object.
-  app.gameObj = gameObj;
+  // Set gameWrapper to global app object.
+  app.gameWrapper = gameWrapper;
 
   // setup game object that will keep game state
   gameObj.initialize = function(canvas, message, playerChar, aiChar, aiState) {
@@ -39,11 +44,11 @@
 
   // method for clearing game state
   gameObj.clearGameState = function() {
-    var i = 0
-      , j = 0;
+    var i = 0,
+        j = 0;
 
-    for (i = 0; i < 3; ++i) {
-      for (j = 0; j < 3; ++j) {
+    for (i = 0; i < 3; i += 1) {
+      for (j = 0; j < 3; j += 1) {
         this.gameState[i][j] = '';
       }
     }
@@ -54,32 +59,24 @@
     var i = 0;
 
     // check for win horizontally
-    for (i = 0; i < 3; ++i) {
-      if (this.gameState[i][0] === char
-          && this.gameState[i][1] === char
-              && this.gameState[i][2] === char) {
+    for (i = 0; i < 3; i += 1) {
+      if (this.gameState[i][0] === char && this.gameState[i][1] === char && this.gameState[i][2] === char) {
         return true;
       }
     }
 
     // check for win vertically
-    for (i = 0; i < 3; ++i) {
-      if (this.gameState[0][i] === char
-          && this.gameState[1][i] === char
-              && this.gameState[2][i] === char) {
+    for (i = 0; i < 3; i += 1) {
+      if (this.gameState[0][i] === char && this.gameState[1][i] === char && this.gameState[2][i] === char) {
         return true;
       }
     }
 
     // check for win diagonally
-    if (this.gameState[0][0] === char
-        && this.gameState[1][1] === char
-            && this.gameState[2][2] === char) {
+    if (this.gameState[0][0] === char && this.gameState[1][1] === char && this.gameState[2][2] === char) {
       return true;
     }
-    if (this.gameState[2][0] === char
-        && this.gameState[1][1] === char
-            && this.gameState[0][2] === char) {
+    if (this.gameState[2][0] === char && this.gameState[1][1] === char && this.gameState[0][2] === char) {
       return true;
     }
 
@@ -88,11 +85,11 @@
 
   // method that check if game is draw
   gameObj.checkDraw = function() {
-    var i = 0
-      , j = 0;
+    var i = 0,
+        j = 0;
 
-    for (i = 0; i < 3; ++i) {
-      for (j = 0; j < 3; ++j) {
+    for (i = 0; i < 3; i += 1) {
+      for (j = 0; j < 3; j += 1) {
         if (this.gameState[i][j] === '') {
           return false;
         }
@@ -118,12 +115,12 @@
 
   // method for calculating draw coordinates
   gameObj.calculateBeginEnd = function(x, y) {
-    var offsetX = (this.width / 3) * 0.1
-      , offsetY = (this.height / 3) * 0.1
-      , beginX = x * (this.width / 3) + offsetX
-      , beginY = y * (this.height / 3) + offsetY
-      , endX = (x + 1) * (this.width / 3) - offsetX
-      , endY = (y + 1) * (this.height / 3) - offsetY;
+    var offsetX = (this.width / 3) * 0.1,
+        offsetY = (this.height / 3) * 0.1,
+        beginX = x * (this.width / 3) + offsetX,
+        beginY = y * (this.height / 3) + offsetY,
+        endX = (x + 1) * (this.width / 3) - offsetX,
+        endY = (y + 1) * (this.height / 3) - offsetY;
 
     return {
       beginX : beginX,
@@ -184,13 +181,13 @@
   // method that return move with which ai can win or null if move is not
   // available
   gameObj.aiWin = function() {
-    var i = 0
-      , j = 0
-      , win = false;
+    var i = 0,
+        j = 0,
+        win = false;
 
     // check if ai can win on this move
-    for (i = 0; i < 3; ++i) {
-      for (j = 0; j < 3; ++j) {
+    for (i = 0; i < 3; i += 1) {
+      for (j = 0; j < 3; j += 1) {
         if (this.gameState[i][j] === '') {
           this.gameState[i][j] = this.aiChar;
           win = this.checkWin(this.aiChar);
@@ -211,13 +208,13 @@
   // method that return move with which ai block user from wining or null if
   // move is not available
   gameObj.aiBlockWin = function() {
-    var i = 0
-      , j = 0
-      , win = false;
+    var i = 0,
+        j = 0,
+        win = false;
 
     // check if player can win on this move
-    for (i = 0; i < 3; ++i) {
-      for (j = 0; j < 3; ++j) {
+    for (i = 0; i < 3; i += 1) {
+      for (j = 0; j < 3; j += 1) {
         if (this.gameState[i][j] === '') {
           this.gameState[i][j] = this.playerChar;
           win = this.checkWin(this.playerChar);
@@ -260,357 +257,377 @@
     }
   };
 
+  // method that calculated move for game state zero
+  gameObj.aiCalculateState0 = function() {
+    if (Math.random() > 0.3) {
+      this.aiState = 4;
+      return this.aiPlayRandomCorner();
+    } else {
+      this.aiState = 2;
+      return {
+        x : 1,
+        y : 1
+      };
+    }
+  };
+
+  // method that calculated move for game state one
+  gameObj.aiCalculateState1 = function() {
+    if (this.lastPlayerMove.x === 1 && this.lastPlayerMove.y === 1) {
+      this.aiState = 3;
+      return this.aiPlayRandomCorner();
+    } else {
+      this.aiState = 5;
+      return {
+        x : 1,
+        y : 1
+      };
+    }
+  };
+
+  // method that calculated move for game state two
+  gameObj.aiCalculateState2 = function() {
+    if ((this.lastPlayerMove.x === 0 && this.lastPlayerMove.y === 0) || (this.lastPlayerMove.x === 2 && this.lastPlayerMove.y === 0) || (this.lastPlayerMove.x === 0 && this.lastPlayerMove.y === 2) || (this.lastPlayerMove.x === 0 && this.lastPlayerMove.y === 0)) {
+      this.aiState = 6;
+      if (this.lastPlayerMove.x === 0 && this.lastPlayerMove.y === 0) {
+        return {
+          x : 2,
+          y : 2
+        };
+      } else if (this.lastPlayerMove.x === 2 && this.lastPlayerMove.y === 0) {
+        return {
+          x : 0,
+          y : 2
+        };
+      } else if (this.lastPlayerMove.x === 0 && this.lastPlayerMove.y === 2) {
+        return {
+          x : 2,
+          y : 0
+        };
+      } else {
+        return {
+          x : 2,
+          y : 2
+        };
+      }
+    } else {
+      this.aiNeedCalc = false;
+      if (this.lastPlayerMove.x === 1 && this.lastPlayerMove.y === 0) {
+        return {
+          x : 0,
+          y : 2
+        };
+      } else if (this.lastPlayerMove.x === 1 && this.lastPlayerMove.y === 2) {
+        return {
+          x : 0,
+          y : 0
+        };
+      } else if (this.lastPlayerMove.x === 0 && this.lastPlayerMove.y === 1) {
+        return {
+          x : 2,
+          y : 0
+        };
+      } else {
+        return {
+          x : 0,
+          y : 2
+        };
+      }
+    }
+  };
+
+  // method that calculated move for game state three
+  gameObj.aiCalculateState3 = function() {
+    this.aiNeedCalc = false;
+
+    if ((this.gameState[0][0] === this.playerChar && this.gameState[2][2] === this.aiChar) || (this.gameState[2][0] === this.playerChar && this.gameState[0][2] === this.aiChar) || (this.gameState[0][2] === this.playerChar && this.gameState[2][0] === this.aiChar) || (this.gameState[2][2] === this.playerChar && this.gameState[0][0] === this.aiChar)) {
+      if (this.gameState[0][0] === '') {
+        return {
+          x : 0,
+          y : 0
+        };
+      } else if (this.gameState[2][0] === '') {
+        return {
+          x : 0,
+          y : 2
+        };
+      } else if (this.gameState[0][2] === '') {
+        return {
+          x : 2,
+          y : 0
+        };
+      } else if (this.gameState[2][2] === '') {
+        return {
+          x : 2,
+          y : 2
+        };
+      }
+    }
+
+    return null;
+  };
+
+  // method that calculated move for game state four after with further calculations are not necessary
+  gameObj.aiCalculateState4NoFurtherCalc = function() {
+    this.aiNeedCalc = false;
+    if (this.gameState[0][0] === this.aiChar) {
+      return {
+        x : 2,
+        y : 2
+      };
+    } else if (this.gameState[0][2] === this.aiChar) {
+      return {
+        x : 0,
+        y : 2
+      };
+    } else if (this.gameState[2][0] === this.aiChar) {
+      return {
+        x : 2,
+        y : 0
+      };
+    } else if (this.gameState[2][2] === this.aiChar) {
+      return {
+        x : 0,
+        y : 0
+      };
+    }
+
+    return null;
+  };
+
+  // method that calculated move for game state four which transfers the game to state six
+  gameObj.aiCalculateState4To6 = function() {
+    this.aiState = 6;
+    if (this.gameState[0][0] === this.aiChar) {
+      if (this.gameState[0][1] === '' && this.gameState[0][2] === '') {
+        return {
+          x : 2,
+          y : 0
+        };
+      } else if (this.gameState[1][0] === '' && this.gameState[2][0] === '') {
+        return {
+          x : 0,
+          y : 2
+        };
+      }
+    } else if (this.gameState[0][2] === this.aiChar) {
+      if (this.gameState[0][0] === '' && this.gameState[0][1] === '') {
+        return {
+          x : 0,
+          y : 0
+        };
+      } else if (this.gameState[1][2] === '' && this.gameState[2][2] === '') {
+        return {
+          x : 2,
+          y : 2
+        };
+      }
+    } else if (this.gameState[2][0] === this.aiChar) {
+      if (this.gameState[0][0] === '' && this.gameState[1][0] === '') {
+        return {
+          x : 0,
+          y : 0
+        };
+      } else if (this.gameState[2][1] === '' && this.gameState[2][2] === '') {
+        return {
+          x : 2,
+          y : 2
+        };
+      }
+    } else if (this.gameState[2][2] === this.aiChar) {
+      if (this.gameState[2][0] === '' && this.gameState[2][1] === '') {
+        return {
+          x : 0,
+          y : 2
+        };
+      } else if (this.gameState[0][2] === '' && this.gameState[1][2] === '') {
+        return {
+          x : 2,
+          y : 0
+        };
+      }
+    }
+
+    return null;
+  };
+
+  // method that calculated move for game state four
+  gameObj.aiCalculateState4 = function() {
+    if (this.lastPlayerMove.x === 1 && this.lastPlayerMove.y === 1) {
+      return this.aiCalculateState4NoFurtherCalc();
+    } else {
+      return this.aiCalculateState4To6();
+    }
+  };
+
+  // method that calculated move for game state five when players last move was to the corner
+  gameObj.aiCalculateState5CornerPlayed = function() {
+    if (this.gameState[0][1] === '') {
+      return {
+        x : 1,
+        y : 0
+      };
+    } else if (this.gameState[1][0] === '') {
+      return {
+        x : 0,
+        y : 1
+      };
+    } else if (this.gameState[2][1] === '') {
+      return {
+        x : 1,
+        y : 2
+      };
+    } else if (this.gameState[1][2] === '') {
+      return {
+        x : 2,
+        y : 1
+      };
+    }
+
+    return null;
+  };
+
+  // method that calculated move for game state five when players last move was not to the corner
+  gameObj.aiCalculateState5NoCornerPlayed = function() {
+    if (this.gameState[0][0] === this.playerChar) {
+      if (this.gameState[2][1] === this.playerChar) {
+        return {
+          x : 0,
+          y : 2
+        };
+      } else if (this.gameState[1][2] === this.playerChar) {
+        return {
+          x : 2,
+          y : 0
+        };
+      }
+    } else if (this.gameState[0][2] === this.playerChar) {
+      if (this.gameState[1][0] === this.playerChar) {
+        return {
+          x : 0,
+          y : 0
+        };
+      } else if (this.gameState[2][1] === this.playerChar) {
+        return {
+          x : 2,
+          y : 2
+        };
+      }
+    } else if (this.gameState[2][2] === this.playerChar) {
+      if (this.gameState[0][1] === this.playerChar) {
+        return {
+          x : 2,
+          y : 0
+        };
+      } else if (this.gameState[1][0] === this.playerChar) {
+        return {
+          x : 0,
+          y : 2
+        };
+      }
+    } else if (this.gameState[2][0] === this.playerChar) {
+      if (this.gameState[1][2] === this.playerChar) {
+        return {
+          x : 2,
+          y : 2
+        };
+      } else if (this.gameState[0][1] === this.playerChar) {
+        return {
+          x : 0,
+          y : 0
+        };
+      }
+    }
+  };
+
+  // method that calculated move for game state five
+  gameObj.aiCalculateState5 = function() {
+    this.aiState = 7;
+    if ((this.lastPlayerMove.x === 0 || this.lastPlayerMove.x === 2) && (this.lastPlayerMove.y === 0 || this.lastPlayerMove.y === 2)) {
+      return this.aiCalculateState5CornerPlayed();
+    } else {
+      return this.aiCalculateState5NoCornerPlayed();
+    }
+  };
+
+  // method that calculated move for game state six
+  gameObj.aiCalculateState6 = function() {
+    this.aiNeedCalc = false;
+
+    if (this.gameState[0][0] === '' && this.gameState[0][1] !== this.playerChar && this.gameState[0][2] !== this.playerChar && this.gameState[1][0] !== this.playerChar && this.gameState[2][0] !== this.playerChar) {
+      return {
+        x : 0,
+        y : 0
+      };
+    } else if (this.gameState[0][2] === '' && this.gameState[0][0] !== this.playerChar && this.gameState[0][1] !== this.playerChar && this.gameState[1][2] !== this.playerChar && this.gameState[2][2] !== this.playerChar) {
+      return {
+        x : 2,
+        y : 0
+      };
+    } else if (this.gameState[2][0] === '' && this.gameState[0][0] !== this.playerChar && this.gameState[1][0] !== this.playerChar && this.gameState[2][1] !== this.playerChar && this.gameState[2][2] !== this.playerChar) {
+      return {
+        x : 0,
+        y : 2
+      };
+    } else if (this.gameState[2][2] === '' && this.gameState[2][0] !== this.playerChar && this.gameState[2][1] !== this.playerChar && this.gameState[0][2] !== this.playerChar && this.gameState[1][2] !== this.playerChar) {
+      return {
+        x : 2,
+        y : 2
+      };
+    }
+
+    return null;
+  };
+
+  // method that calculated move for game state seven
+  gameObj.aiCalculateState7 = function() {
+    this.aiNeedCalc = false;
+    if (this.gameState[0][0] === '' && (this.gameState[0][1] === '' || this.gameState[1][0] === '')) {
+      return {
+        x : 0,
+        y : 0
+      };
+    } else if (this.gameState[0][2] === '' && (this.gameState[0][1] === '' || this.gameState[1][2] === '')) {
+      return {
+        x : 2,
+        y : 0
+      };
+    } else if (this.gameState[2][0] === '' && (this.gameState[1][0] === '' || this.gameState[2][1] === '')) {
+      return {
+        x : 0,
+        y : 2
+      };
+    } else if (this.gameState[2][2] === '' && (this.gameState[2][1] === '' || this.gameState[1][2] === '')) {
+      return {
+        x : 2,
+        y : 2
+      };
+    }
+
+    return null;
+  };
+
   // method that returns best calculated move
   // this method was written using tictactoe.png that can be found on
   // https://github.com/mjamado/TicTacToeJS/blob/master/tictactoe.png
   gameObj.aiCalculateMove = function() {
     switch (this.aiState) {
       case 0:
-        if (Math.random() > 0.3) {
-          this.aiState = 4;
-          return this.aiPlayRandomCorner();
-        } else {
-          this.aiState = 2;
-          return {
-            x : 1,
-            y : 1
-          };
-        }
-        break;
+        return this.aiCalculateState0();
       case 1:
-        if (this.lastPlayerMove.x === 1 && this.lastPlayerMove.y === 1) {
-          this.aiState = 3;
-          return this.aiPlayRandomCorner();
-        } else {
-          this.aiState = 5;
-          return {
-            x : 1,
-            y : 1
-          };
-        }
-        break;
+        return this.aiCalculateState1();
       case 2:
-        if ((this.lastPlayerMove.x === 0 && this.lastPlayerMove.y === 0)
-            || (this.lastPlayerMove.x === 2 && this.lastPlayerMove.y === 0)
-                || (this.lastPlayerMove.x === 0 && this.lastPlayerMove.y === 2)
-                    || (this.lastPlayerMove.x === 0 && this.lastPlayerMove.y === 0)) {
-
-          this.aiState = 6;
-          if (this.lastPlayerMove.x === 0 && this.lastPlayerMove.y === 0) {
-            return {
-                        x : 2,
-                        y : 2
-            };
-          } else if (this.lastPlayerMove.x === 2
-              && this.lastPlayerMove.y === 0) {
-            return {
-              x : 0,
-              y : 2
-            };
-          } else if (this.lastPlayerMove.x === 0
-              && this.lastPlayerMove.y === 2) {
-            return {
-              x : 2,
-              y : 0
-            };
-          } else {
-            return {
-              x : 2,
-              y : 2
-            };
-          }
-        } else {
-          this.aiNeedCalc = false;
-          if (this.lastPlayerMove.x === 1
-              && this.lastPlayerMove.y === 0) {
-            return {
-              x : 0,
-              y : 2
-            };
-          } else if (this.lastPlayerMove.x === 1
-              && this.lastPlayerMove.y === 2) {
-            return {
-              x : 0,
-              y : 0
-            };
-          } else if (this.lastPlayerMove.x === 0
-              && this.lastPlayerMove.y === 1) {
-            return {
-              x : 2,
-              y : 0
-            };
-          } else {
-            return {
-              x : 0,
-              y : 2
-            };
-          }
-        }
-        break;
+        return this.aiCalculateState2();
       case 3:
-        if ((this.gameState[0][0] === this.playerChar && this.gameState[2][2] === this.aiChar)
-            || (this.gameState[2][0] === this.playerChar && this.gameState[0][2] === this.aiChar)
-                || (this.gameState[0][2] === this.playerChar && this.gameState[2][0] === this.aiChar)
-                    || (this.gameState[2][2] === this.playerChar && this.gameState[0][0] === this.aiChar)) {
-          this.aiNeedCalc = false;
-          if (this.gameState[0][0] === '') {
-            return {
-              x : 0,
-              y : 0
-            };
-          } else if (this.gameState[2][0] === '') {
-            return {
-              x : 0,
-              y : 2
-            };
-          } else if (this.gameState[0][2] === '') {
-            return {
-              x : 2,
-              y : 0
-            };
-          } else if (this.gameState[2][2] === '') {
-            return {
-              x : 2,
-              y : 2
-            };
-          }
-        }
-
-        this.aiNeedCalc = false;
-        break;
+        return this.aiCalculateState3();
       case 4:
-        if (this.lastPlayerMove.x === 1 && this.lastPlayerMove.y === 1) {
-          this.aiNeedCalc = false;
-          if (this.gameState[0][0] === this.aiChar) {
-            return {
-              x : 2,
-              y : 2
-            };
-          } else if (this.gameState[0][2] === this.aiChar) {
-            return {
-              x : 0,
-              y : 2
-            };
-          } else if (this.gameState[2][0] === this.aiChar) {
-            return {
-              x : 2,
-              y : 0
-            };
-          } else if (this.gameState[2][2] === this.aiChar) {
-            return {
-              x : 0,
-              y : 0
-            };
-          }
-        } else {
-          this.aiState = 6;
-          if (this.gameState[0][0] === this.aiChar) {
-            if (this.gameState[0][1] === ''
-                && this.gameState[0][2] === '') {
-              return {
-                x : 2,
-                y : 0
-              };
-            } else if (this.gameState[1][0] === ''
-                && this.gameState[2][0] === '') {
-              return {
-                x : 0,
-                y : 2
-              };
-            }
-          } else if (this.gameState[0][2] === this.aiChar) {
-            if (this.gameState[0][0] === ''
-                && this.gameState[0][1] === '') {
-              return {
-                x : 0,
-                y : 0
-              };
-            } else if (this.gameState[1][2] === ''
-                && this.gameState[2][2] === '') {
-              return {
-                x : 2,
-                y : 2
-              };
-            }
-          } else if (this.gameState[2][0] === this.aiChar) {
-            if (this.gameState[0][0] === ''
-                && this.gameState[1][0] === '') {
-              return {
-                x : 0,
-                y : 0
-              };
-            } else if (this.gameState[2][1] === ''
-                && this.gameState[2][2] === '') {
-              return {
-                x : 2,
-                y : 2
-              };
-            }
-          } else if (this.gameState[2][2] === this.aiChar) {
-            if (this.gameState[2][0] === ''
-                && this.gameState[2][1] === '') {
-              return {
-                x : 0,
-                y : 2
-              };
-            } else if (this.gameState[0][2] === ''
-                && this.gameState[1][2] === '') {
-              return {
-                x : 2,
-                y : 0
-              };
-            }
-          }
-        }
-        break;
+        return this.aiCalculateState4();
       case 5:
-        this.aiState = 7;
-        if ((this.lastPlayerMove.x === 0 && this.lastPlayerMove.y === 0)
-            || (this.lastPlayerMove.x === 0 && this.lastPlayerMove.y === 2)
-                || (this.lastPlayerMove.x === 2 && this.lastPlayerMove.y === 0)
-                    || (this.lastPlayerMove.x === 2 && this.lastPlayerMove.y === 2)) {
-          if (this.gameState[0][1] === '') {
-            return {
-              x : 1,
-              y : 0
-            };
-          } else if (this.gameState[1][0] === '') {
-            return {
-              x : 0,
-              y : 1
-            };
-          } else if (this.gameState[2][1] === '') {
-            return {
-              x : 1,
-              y : 2
-            };
-          } else if (this.gameState[1][2] === '') {
-            return {
-              x : 2,
-              y : 1
-            };
-          }
-        } else {
-          if (this.gameState[0][0] === this.playerChar) {
-            if (this.gameState[2][1] === this.playerChar) {
-              return {
-                x : 0,
-                y : 2
-              };
-            } else if (this.gameState[1][2] === this.playerChar) {
-              return {
-                x : 2,
-                y : 0
-              };
-            }
-          } else if (this.gameState[0][2] === this.playerChar) {
-            if (this.gameState[1][0] === this.playerChar) {
-              return {
-                x : 0,
-                y : 0
-              };
-            } else if (this.gameState[2][1] === this.playerChar) {
-              return {
-                x : 2,
-                y : 2
-              };
-            }
-          } else if (this.gameState[2][2] === this.playerChar) {
-            if (this.gameState[0][1] === this.playerChar) {
-              return {
-                x : 2,
-                y : 0
-              };
-            } else if (this.gameState[1][0] === this.playerChar) {
-              return {
-                x : 0,
-                y : 2
-              };
-            }
-          } else if (this.gameState[2][0] === this.playerChar) {
-            if (this.gameState[1][2] === this.playerChar) {
-              return {
-                x : 2,
-                y : 2
-              };
-            } else if (this.gameState[0][1] === this.playerChar) {
-              return {
-                x : 0,
-                y : 0
-              };
-            }
-          }
-        }
-        break;
+        return this.aiCalculateState5();
       case 6:
-        this.aiNeedCalc = false;
-
-        if (this.gameState[0][0] === ''
-            && this.gameState[0][1] !== this.playerChar
-                && this.gameState[0][2] !== this.playerChar
-                    && this.gameState[1][0] !== this.playerChar
-                        && this.gameState[2][0] !== this.playerChar) {
-          return {
-            x : 0,
-            y : 0
-          };
-        } else if (this.gameState[0][2] === ''
-            && this.gameState[0][0] !== this.playerChar
-                && this.gameState[0][1] !== this.playerChar
-                    && this.gameState[1][2] !== this.playerChar
-                        && this.gameState[2][2] !== this.playerChar) {
-          return {
-            x : 2,
-            y : 0
-          };
-        } else if (this.gameState[2][0] === ''
-            && this.gameState[0][0] !== this.playerChar
-                && this.gameState[1][0] !== this.playerChar
-                    && this.gameState[2][1] !== this.playerChar
-                        && this.gameState[2][2] !== this.playerChar) {
-          return {
-            x : 0,
-            y : 2
-          };
-        } else if (this.gameState[2][2] === ''
-            && this.gameState[2][0] !== this.playerChar
-                && this.gameState[2][1] !== this.playerChar
-                    && this.gameState[0][2] !== this.playerChar
-                        && this.gameState[1][2] !== this.playerChar) {
-          return {
-            x : 2,
-            y : 2
-          };
-        }
-        break;
+        return this.aiCalculateState6();
       case 7:
-        this.aiNeedCalc = false;
-        if (this.gameState[0][0] === ''
-            && (this.gameState[0][1] === '' || this.gameState[1][0] === '')) {
-          return {
-            x : 0,
-            y : 0
-          };
-        } else if (this.gameState[0][2] === ''
-            && (this.gameState[0][1] === '' || this.gameState[1][2] === '')) {
-          return {
-            x : 2,
-            y : 0
-          };
-        } else if (this.gameState[2][0] === ''
-            && (this.gameState[1][0] === '' || this.gameState[2][1] === '')) {
-          return {
-            x : 0,
-            y : 2
-          };
-        } else if (this.gameState[2][2] === ''
-            && (this.gameState[2][1] === '' || this.gameState[1][2] === '')) {
-          return {
-            x : 2,
-            y : 2
-          };
-        }
-        break;
+        return this.aiCalculateState7();
     }
 
     return null;
@@ -618,10 +635,11 @@
 
   // method that returns next available move or null if board if full
   gameObj.aiNextMove = function() {
-    var i = 0, j = 0;
+    var i = 0,
+        j = 0;
 
-    for (i = 0; i < 3; ++i) {
-      for (j = 0; j < 3; ++j) {
+    for (i = 0; i < 3; i += 1) {
+      for (j = 0; j < 3; j += 1) {
         if (this.gameState[i][j] === '') {
           return {
             y : i,
@@ -786,12 +804,32 @@
     this.clearCanvas();
     this.drawGrid();
 
-    for (i = 0; i < 3; ++i) {
-      for (j = 0; j < 3; ++j) {
+    for (i = 0; i < 3; i += 1) {
+      for (j = 0; j < 3; j += 1) {
         if (this.gameState[i][j] !== '') {
           this.drawMove(this.gameState[i][j], j, i);
         }
       }
     }
+  };
+
+  gameWrapper.initialize = function(canvas, message, playerChar, aiChar, aiState) {
+    gameObj.initialize(canvas, message, playerChar, aiChar, aiState);
+  };
+
+  gameWrapper.drawGrid = function() {
+    gameObj.drawGrid();
+  };
+
+  gameWrapper.aiMove = function() {
+    gameObj.aiMove();
+  };
+
+  gameWrapper.handleClick = function(evt) {
+    gameObj.handleClick(evt);
+  };
+
+  gameWrapper.handleResize = function() {
+    gameObj.handleResize();
   };
 }());

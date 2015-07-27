@@ -1,4 +1,6 @@
 (function(root, Atlas) {
+  'use strict';
+
   // Create app object to serve as namespace.
   var app = root.app || {};
 
@@ -44,14 +46,14 @@
       var aiState = first ? 1 : 0;
       canvas.height = canvas.clientHeight;
       canvas.width = canvas.clientWidth;
-      app.gameObj.initialize(canvas, message, playerChar, aiChar, aiState);
-      app.gameObj.drawGrid();
+      app.gameWrapper.initialize(canvas, message, playerChar, aiChar, aiState);
+      app.gameWrapper.drawGrid();
       if (!first) {
-        app.gameObj.aiMove();
+        app.gameWrapper.aiMove();
       }
     },
     handleBoardClick : function(evt) {
-      app.gameObj.handleClick(evt);
+      app.gameWrapper.handleClick(evt);
     }
   });
 
@@ -109,7 +111,7 @@
       'about' : 'about'
     },
     initialize : function(options) {
-      var turnModel = new app.TurnModel;
+      var turnModel = new app.TurnModel();
       this.indexView = new app.IndexView();
       this.playView = new app.PlayView({
         turnModel : turnModel
@@ -143,7 +145,7 @@
   function windowResizeHandler() {
     var canvas = document.getElementById('board');
     if (canvas !== null) {
-      app.gameObj.handleResize();
+      app.gameWrapper.handleResize();
     }
   }
 
